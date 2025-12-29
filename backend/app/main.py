@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from .routers import projects, tasks, auth
+from .routers import projects, tasks, auth, users
 from . import models
 from .database import engine
 from .routers import projects, tasks
@@ -36,3 +37,5 @@ def read_root():
 # Include routers
 app.include_router(projects.router)
 app.include_router(tasks.router)
+app.include_router(auth.router)
+app.include_router(users.router)

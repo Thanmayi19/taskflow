@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { clearToken } from "../auth/auth";
 import api from "../api/api";
 
 function Projects() {
@@ -56,8 +57,24 @@ function Projects() {
 
   return (
     <div className="page">
-      <header className="navbar">
+      <header
+        className="navbar"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h1>TaskFlow</h1>
+        <button
+          className="btn small"
+          onClick={() => {
+            clearToken();
+            window.location.href = "/login";
+          }}
+        >
+          Logout
+        </button>
       </header>
 
       <main className="content">

@@ -1,10 +1,28 @@
 from typing import List, Optional
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
-# ----- Task Schemas -----
+# ---------- Auth/User Schemas ----------
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=72)
+
+
+class UserPublic(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+# ---------- Task Schemas ----------
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
@@ -24,12 +42,10 @@ class TaskUpdate(BaseModel):
 
 class Task(TaskBase):
     id: int
-
-    # Pydantic v2: replaces Config(orm_mode=True)
     model_config = ConfigDict(from_attributes=True)
 
 
-# ----- Project Schemas -----
+# ---------- Project Schemas ----------
 class ProjectBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -47,7 +63,6 @@ class ProjectUpdate(BaseModel):
 class Project(ProjectBase):
     id: int
     created_at: datetime
-    tasks: List[Task] = Field(default_factory=list)
+    tasks: List[Task] = []
 
-    # Pydantic v2: replaces Config(orm_mode=True)
     model_config = ConfigDict(from_attributes=True)

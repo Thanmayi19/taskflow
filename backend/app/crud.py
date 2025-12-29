@@ -1,22 +1,49 @@
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .auth import hash_password
 
 
-# ---------- Project CRUD ----------
-
-def get_projects(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Project).offset(skip).limit(limit).all()
-
-
-def get_project(db: Session, project_id: int):
-    return db.query(models.Project).filter(models.Project.id == project_id).first()
+# ---------- User CRUD ----------
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
 
 
-def create_project(db: Session, project: schemas.ProjectCreate):
+def create_user(db: Session, user: schemas.UserCreate):
+    db_user = models.User(
+        email=user.email,
+        hashed_password=hash_password(user.password),
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+# ---------- Project CRUD (scoped to user) ----------
+def get_projects(db: Session, owner_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.Project)
+        .filter(models.Project.owner_id == owner_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
+def get_project(db: Session, owner_id: int, project_id: int):
+    return (
+        db.query(models.Project)
+        .filter(models.Project.owner_id == owner_id, models.Project.id == project_id)
+        .first()
+    )
+
+
+def create_project(db: Session, owner_id: int, project: schemas.ProjectCreate):
     db_project = models.Project(
         name=project.name,
         description=project.description,
+        owner_id=owner_id,
     )
     db.add(db_project)
     db.commit()
@@ -24,8 +51,8 @@ def create_project(db: Session, project: schemas.ProjectCreate):
     return db_project
 
 
-def update_project(db: Session, project_id: int, project_update: schemas.ProjectUpdate):
-    db_project = get_project(db, project_id)
+def update_project(db: Session, owner_id: int, project_id: int, project_update: schemas.ProjectUpdate):
+    db_project = get_project(db, owner_id, project_id)
     if not db_project:
         return None
 
@@ -38,8 +65,8 @@ def update_project(db: Session, project_id: int, project_update: schemas.Project
     return db_project
 
 
-def delete_project(db: Session, project_id: int):
-    db_project = get_project(db, project_id)
+def delete_project(db: Session, owner_id: int, project_id: int):
+    db_project = get_project(db, owner_id, project_id)
     if not db_project:
         return None
     db.delete(db_project)
@@ -47,17 +74,33 @@ def delete_project(db: Session, project_id: int):
     return db_project
 
 
-# ---------- Task CRUD ----------
+# ---------- Task CRUD (via owner->project ownership) ----------
+def get_tasks(db: Session, owner_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.Task)
+        .join(models.Project)
+        .filter(models.Project.owner_id == owner_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Task).offset(skip).limit(limit).all()
+
+def get_task(db: Session, owner_id: int, task_id: int):
+    return (
+        db.query(models.Task)
+        .join(models.Project)
+        .filter(models.Project.owner_id == owner_id, models.Task.id == task_id)
+        .first()
+    )
 
 
-def get_task(db: Session, task_id: int):
-    return db.query(models.Task).filter(models.Task.id == task_id).first()
+def create_task(db: Session, owner_id: int, task: schemas.TaskCreate):
+    # ensure the project belongs to the user
+    project = get_project(db, owner_id, task.project_id)
+    if not project:
+        return None
 
-
-def create_task(db: Session, task: schemas.TaskCreate):
     db_task = models.Task(
         title=task.title,
         description=task.description,
@@ -70,8 +113,8 @@ def create_task(db: Session, task: schemas.TaskCreate):
     return db_task
 
 
-def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
-    db_task = get_task(db, task_id)
+def update_task(db: Session, owner_id: int, task_id: int, task_update: schemas.TaskUpdate):
+    db_task = get_task(db, owner_id, task_id)
     if not db_task:
         return None
 
@@ -84,8 +127,8 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
     return db_task
 
 
-def delete_task(db: Session, task_id: int):
-    db_task = get_task(db, task_id)
+def delete_task(db: Session, owner_id: int, task_id: int):
+    db_task = get_task(db, owner_id, task_id)
     if not db_task:
         return None
     db.delete(db_task)
