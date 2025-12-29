@@ -5,6 +5,7 @@ from .routers import projects, tasks, auth, users
 from . import models
 from .database import engine
 from .routers import projects, tasks
+import os
 
 # Create tables in the database
 models.Base.metadata.create_all(bind=engine)
@@ -20,6 +21,9 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+frontend_origin = os.getenv("FRONTEND_ORIGIN")
+if frontend_origin:
+    origins.append(frontend_origin)
 
 app.add_middleware(
     CORSMiddleware,
