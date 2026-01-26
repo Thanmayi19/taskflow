@@ -62,3 +62,21 @@ TaskFlow is a full-stack, authenticated project and task management application 
 
 ## 📂 Project Structure
 
+taskflow/
+├── backend/
+│ ├── app/
+│ │ ├── routers/ # API routes (auth, users, projects, tasks)
+│ │ ├── models.py # Database models
+│ │ ├── schemas.py # Request/response schemas
+│ │ ├── crud.py # Business logic
+│ │ ├── auth.py # JWT & password hashing
+│ │ └── main.py # FastAPI app entry
+│ └── requirements.txt
+│
+└── client/
+├── src/
+│ ├── pages/ # App pages (Login, Projects, Tasks)
+│ ├── components/ # Reusable UI components
+│ ├── api/ # Axios API client
+│ └── auth/ # Frontend auth helpers
+└── package.json
