@@ -62,16 +62,3 @@ TaskFlow is a full-stack, authenticated project and task management application 
 
 ## 📂 Project Structure
 
-
----
-
-## ⚙️ Local Setup
-
-### Backend
-
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-uvicorn app.main:app --reload
