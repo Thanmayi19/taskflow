@@ -61,7 +61,7 @@ TaskFlow is a full-stack, authenticated project and task management application 
 ---
 
 ## 📂 Project Structure
-
+```
 taskflow/
 ├── backend/
 │ ├── app/
@@ -80,3 +80,4 @@ taskflow/
 │ ├── api/ # Axios API client
 │ └── auth/ # Frontend auth helpers
 └── package.json
+```
