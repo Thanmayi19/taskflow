@@ -1,0 +1,77 @@
+# 🧩 TaskFlow
+
+TaskFlow is a full-stack, authenticated project and task management application built using FastAPI, PostgreSQL, and React. The application supports secure user authentication, user-scoped data access, and complete CRUD functionality for managing projects and tasks.
+
+## 🚀 Live Demo
+
+- **Frontend:** https://taskflow-beta-eight.vercel.app  
+- **Backend API (Swagger):** https://taskflow-backend-heyj.onrender.com/docs
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & Security
+- User registration and login using email and password
+- Secure password hashing with bcrypt
+- JWT-based authentication
+- Protected API routes
+- User-scoped data access (users can only see their own projects and tasks)
+
+### 📁 Project Management
+- Create, view, update, and delete projects
+- Projects are owned by individual users
+- Projects contain multiple tasks
+
+### ✅ Task Management
+- Create tasks under projects
+- Update task details
+- Mark tasks as complete or incomplete
+- Task ownership enforced through project ownership
+
+### 🖥️ Frontend
+- Built with React and Vite
+- Client-side routing with React Router
+- Protected routes for authenticated users
+- Clean, responsive UI
+- Axios interceptor for automatic authentication headers
+
+---
+
+## 🏗️ Tech Stack
+
+### Backend
+- FastAPI
+- PostgreSQL
+- SQLAlchemy ORM
+- Pydantic v2
+- JWT (python-jose)
+- Passlib (bcrypt)
+
+### Frontend
+- React
+- Vite
+- Axios
+- React Router
+
+### Deployment
+- Backend and database hosted on Render
+- Frontend deployed on Vercel
+
+---
+
+## 📂 Project Structure
+
+
+---
+
+## ⚙️ Local Setup
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload
